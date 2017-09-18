@@ -113,3 +113,46 @@ vowels <- list.files(path = "data/durations",
     ) %>%
     filter(!(file == "it04-002" | file == "pl03-020")) # filter obvious outliers
 ```
+
+# Vowel duration
+
+## Italian
+
+```{r it-duration-lm}
+it_vow_lm <- lmer(
+    vowel.duration ~
+        c2phonation +
+        c2place +
+        vowel +
+        c2phonation:vowel +
+        sentence.duration +
+        (1+c2phonation|speaker) +
+        (1|word),
+    data = filter(vowels, language == "italian")
+)
+
+summary(it_vow_lm)
+
+it_vow_lm_null <- lmer(
+    vowel.duration ~
+#        c2phonation +
+        c2place +
+        vowel +
+        sentence.duration +
+        (1+c2phonation|speaker) +
+        (1|word),
+    data = filter(vowels, language == "italian")
+)
+
+anova(it_vow_lm_null, it_vow_lm)
+```
+
+```{r it-duration-lm-plots}
+plot(fitted(it_vow_lm),residuals(it_vow_lm))
+qqnorm(resid(it_vow_lm))
+plot(allEffects(it_vow_lm))
+```
+
+
+# Tongue root advancement
+
