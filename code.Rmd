@@ -1,0 +1,102 @@
+---
+title: "Vowel duration and tongue root advancement in Italian and Polish"
+author: "Stefano Coretta"
+date: "18/09/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+theme_set(theme_minimal())
+library(rticulate) # https://github.com/stefanocoretta/rticulate
+library(stringr)
+library(scales)
+library(tidymv) # https://github.com/stefanocoretta/tidymv
+library(itsadug)
+library(lmerTest)
+library(effects)
+options(contrasts = rep ("contr.treatment", 2))
+```
+
+# Import data
+
+```{r tongues}
+languages <- read_csv("data/languages.csv")
+words <- read_csv("data/nonce.csv")
+
+columns <- c(
+    "speaker",
+    "seconds",
+    "rec.date",
+    "prompt",
+    "label",
+    "TT.displacement.sm",
+    "TT.velocity",
+    "TT.velocity.abs",
+    "TD.displacement.sm",
+    "TD.velocity",
+    "TD.velocity.abs"
+)
+
+aaa_files <- list.files(
+    path = "./data/tongue",
+    pattern = "*-tongue-cart.tsv",
+    full.names = TRUE
+)
+
+tongues <- read_aaa(
+    aaa_files,
+    columns, 
+    na.rm = TRUE
+) %>%
+    mutate(word = word(prompt, 2)) %>%
+    left_join(y = languages) %>%
+    left_join(y = words) %>%
+    mutate_if(is.character, as.factor) %>%
+    group_by(speaker) %>%
+    mutate(
+        X.re = rescale(X),
+        Y.re = rescale(Y)
+    ) %>%
+    ungroup() %>%
+    mutate(
+        vowel.ord = ordered(vowel, levels = c("a", "o", "u")),
+        c2place.ord = ordered(c2place, levels = c("coronal", "velar")),
+        c2phonation.ord = ordered(c2phonation, levels = c("voiceless", "voiced"))
+    )
+
+tongues_max <- tongues %>%
+    filter(label %in% c("max_TT", "max_TD"), vowel != "u") %>%
+    arrange(rec.date, fan.line) %>%
+    create_event_start("rec.date")
+
+aaa_files_clos <- list.files(
+    path = "./data/tongue",
+    pattern = "*-tongue-clos-cart.tsv",
+    full.names = TRUE
+)
+
+tongues_clos <- read_aaa(
+    aaa_files_clos,
+    columns, 
+    na.rm = TRUE
+) %>%
+    mutate(word = word(prompt, 2)) %>%
+    left_join(y = languages) %>%
+    left_join(y = words) %>%
+    mutate_if(is.character, as.factor) %>%
+    group_by(speaker) %>%
+    mutate(
+        X.re = rescale(X),
+        Y.re = rescale(Y)
+    ) %>%
+    ungroup() %>%
+    mutate(
+        vowel.ord = ordered(vowel, levels = c("a", "o", "u")),
+        c2place.ord = ordered(c2place, levels = c("coronal", "velar")),
+        c2phonation.ord = ordered(c2phonation, levels = c("voiceless", "voiced"))
+    ) %>%
+    arrange(rec.date, fan.line) %>%
+    create_event_start("rec.date")
+```
