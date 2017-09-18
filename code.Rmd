@@ -21,7 +21,9 @@ options(contrasts = rep ("contr.treatment", 2))
 
 # Import data
 
-```{r tongues}
+`tongues` contains splines coordinates at maximum displacement, `tongues_clos` has splines coordinates at acoustic closure, and `vowels` has durational data.
+
+```{r data}
 languages <- read_csv("data/languages.csv")
 words <- read_csv("data/nonce.csv")
 
@@ -64,9 +66,7 @@ tongues <- read_aaa(
         vowel.ord = ordered(vowel, levels = c("a", "o", "u")),
         c2place.ord = ordered(c2place, levels = c("coronal", "velar")),
         c2phonation.ord = ordered(c2phonation, levels = c("voiceless", "voiced"))
-    )
-
-tongues_max <- tongues %>%
+    ) %>%
     filter(label %in% c("max_TT", "max_TD"), vowel != "u") %>%
     arrange(rec.date, fan.line) %>%
     create_event_start("rec.date")
@@ -99,4 +99,17 @@ tongues_clos <- read_aaa(
     ) %>%
     arrange(rec.date, fan.line) %>%
     create_event_start("rec.date")
+
+vowels <- list.files(path = "data/durations",
+                   pattern = "*-vowel-durations.csv",
+                   full.names = TRUE) %>%
+    map_df(~read_csv(., na = "--undefined--")) %>%
+    left_join(y = languages) %>%
+    left_join(y = words) %>%
+    mutate_if(is.character, as.factor) %>%
+    mutate(
+        index = as.factor(index),
+        c2phonation = factor(c2phonation, levels = c("voiceless", "voiced"))
+    ) %>%
+    filter(!(file == "it04-002" | file == "pl03-020")) # filter obvious outliers
 ```
