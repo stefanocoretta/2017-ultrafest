@@ -153,6 +153,42 @@ qqnorm(resid(it_vow_lm))
 plot(allEffects(it_vow_lm))
 ```
 
+## Polish
+
+```{r pl-duration-lm}
+pl_vow_lm <- lmer(
+    vowel.duration ~
+        c2phonation +
+        vowel +
+        c2place +
+        sentence.duration +
+        (1+c2phonation|speaker) +
+        (1|word),
+    data = filter(vowels, language == "polish")
+)
+
+summary(pl_vow_lm)
+
+pl_vow_lm_null <- lmer(
+    vowel.duration ~
+#        c2phonation +
+        vowel +
+        c2place +
+        sentence.duration +
+        (1+c2phonation|speaker) +
+        (1|word),
+    data = filter(vowels, language == "polish")
+)
+
+anova(pl_vow_lm_null, pl_vow_lm)
+```
+
+```{r pl-duration-lm-plots}
+plot(fitted(pl_vow_lm),residuals(pl_vow_lm))
+qqnorm(resid(pl_vow_lm))
+plot(allEffects(pl_vow_lm))
+```
 
 # Tongue root advancement
 
+## Italian
