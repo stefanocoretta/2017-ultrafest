@@ -192,3 +192,64 @@ plot(allEffects(pl_vow_lm))
 # Tongue root advancement
 
 ## Italian
+
+### IT01
+
+```{r}
+it01_max <- filter(tongues_max, speaker == "it01")
+
+it01_gamm <- bam(
+    Y ~
+        X.re +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_max,
+    method = "fREML"
+)
+
+rho <- start_value_rho(it01_gamm)
+
+it01_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_max,
+    method = "ML",
+    rho = rho,
+    AR.start = it01_max$start.event
+)
+
+summary(it01_gamm_ar)
+
+it01_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+#        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_max,
+    method = "ML",
+    rho = rho,
+    AR.start = it01_max$start.event
+)
+
+compareML(it01_gamm_ar_null, it01_gamm_ar)
+```
+
+```{r}
+plot_gamsd(
+    it01_gamm_ar,
+    view = "X",
+    comparison = list(c2phonation.ord = c("voiceless", "voiced")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
