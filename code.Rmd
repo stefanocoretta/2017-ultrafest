@@ -97,6 +97,7 @@ tongues_clos <- read_aaa(
         c2place.ord = ordered(c2place, levels = c("coronal", "velar")),
         c2phonation.ord = ordered(c2phonation, levels = c("voiceless", "voiced"))
     ) %>%
+    filter(vowel != "u") %>%
     arrange(rec.date, fan.line) %>%
     create_event_start("rec.date")
 
@@ -432,3 +433,252 @@ plot_gamsd(
     conditions = list(c2place.ord = "coronal")
 )
 ```
+
+# Tongue root advancement at closure
+
+## Italian
+
+### IT01
+
+```{r it01-tra-clos}
+it01_clos <- filter(tongues_clos, speaker == "it01")
+
+it01_gamm <- bam(
+    Y ~
+        X.re +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_clos,
+    method = "fREML"
+)
+
+rho <- start_value_rho(it01_gamm)
+
+it01_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = it01_clos$start.event
+)
+
+summary(it01_gamm_ar)
+
+it01_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+#        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = it01_clos$start.event
+)
+
+compareML(it01_gamm_ar_null, it01_gamm_ar)
+```
+
+```{r it01-tra-clos-plot}
+plot_gamsd(
+    it01_gamm_ar,
+    view = "X",
+    comparison = list(c2phonation.ord = c("voiceless", "voiced")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
+
+### IT02
+
+```{r it02-tra-clos}
+it02_clos <- filter(tongues_clos, speaker == "it02")
+
+it02_gamm <- bam(
+    Y ~
+        X.re +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_clos,
+    method = "fREML"
+)
+
+rho <- start_value_rho(it02_gamm)
+
+it02_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = it02_clos$start.event
+)
+
+summary(it02_gamm_ar)
+
+it02_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+#        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = it02_clos$start.event
+)
+
+compareML(it02_gamm_ar_null, it02_gamm_ar)
+```
+
+```{r it02-tra-clos-plot}
+plot_gamsd(
+    it02_gamm_ar,
+    view = "X",
+    comparison = list(c2phonation.ord = c("voiceless", "voiced")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
+
+## Polish
+
+### PL02
+
+```{r pl02-tra-clos}
+pl02_clos <- filter(tongues_clos, speaker == "pl02", X > -20)
+
+pl02_gamm <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = pl02_clos,
+    method = "ML"
+)
+
+rho <- start_value_rho(pl02_gamm)
+
+pl02_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = pl02_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = pl02_clos$start.event
+)
+
+summary(pl02_gamm_ar)
+
+pl02_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = pl02_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = pl02_clos$start.event
+)
+
+compareML(pl02_gamm_ar_null, pl02_gamm_ar)
+```
+
+```{r pl02-tra-clos-plot}
+plot_gamsd(
+    pl02_gamm_ar,
+    view = "X",
+    comparison = list(c2phonation.ord = c("voiceless", "voiced")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
+
+### PL04
+
+```{r pl04-tra-clos}
+pl04_clos <- filter(tongues_clos, speaker == "pl04", X > -30)
+
+pl04_gamm <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = pl04_clos,
+    method = "ML"
+)
+
+rho <- start_value_rho(pl04_gamm)
+
+pl04_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = pl04_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = pl04_clos$start.event
+)
+
+summary(pl04_gamm_ar)
+
+pl04_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = pl04_clos,
+    method = "ML",
+    rho = rho,
+    AR.start = pl04_clos$start.event
+)
+
+compareML(pl04_gamm_ar_null, pl04_gamm_ar)
+```
+
+```{r pl04-tra-clos-plot}
+plot_gamsd(
+    pl02_gamm_ar,
+    view = "X",
+    comparison = list(c2phonation.ord = c("voiceless", "voiced")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
+
