@@ -2,7 +2,14 @@
 title: "Vowel duration and tongue root advancement in Italian and Polish"
 author: "Stefano Coretta"
 date: "18/09/2017"
-output: html_document
+output:
+  pdf_document: 
+    latex_engine: xelatex
+    number_sections: yes
+  html_document:
+    highlight: tango
+    number_sections: yes
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
@@ -367,7 +374,7 @@ pl02_gamm_ar_null <- bam(
 compareML(pl02_gamm_ar_null, pl02_gamm_ar)
 ```
 
-```{r pl02-tra}
+```{r pl02-tra-plot}
 plot_gamsd(
     pl02_gamm_ar,
     view = "X",
@@ -379,7 +386,7 @@ plot_gamsd(
 ### PL04
 
 ```{r pl04-tra}
-pl04_max <- filter(tongues, speaker == "pl04", X > -30)
+pl04_max <- filter(tongues, speaker == "pl04", X > -25)
 
 pl04_gamm <- bam(
     Y ~
@@ -425,7 +432,7 @@ pl04_gamm_ar_null <- bam(
 compareML(pl04_gamm_ar_null, pl04_gamm_ar)
 ```
 
-```{r pl04-tra}
+```{r pl04-tra-plot}
 plot_gamsd(
     pl04_gamm_ar,
     view = "X",
@@ -625,7 +632,7 @@ plot_gamsd(
 ### PL04
 
 ```{r pl04-tra-clos}
-pl04_clos <- filter(tongues_clos, speaker == "pl04", X > -30)
+pl04_clos <- filter(tongues_clos, speaker == "pl04", X > -25)
 
 pl04_gamm <- bam(
     Y ~
@@ -675,7 +682,7 @@ compareML(pl04_gamm_ar_null, pl04_gamm_ar)
 
 ```{r pl04-tra-clos-plot}
 plot_gamsd(
-    pl02_gamm_ar,
+    pl04_gamm_ar,
     view = "X",
     comparison = list(c2phonation.ord = c("voiceless", "voiced")),
     conditions = list(c2place.ord = "coronal")
@@ -823,3 +830,9 @@ plot_gamsd(
     conditions = list(c2place.ord = "coronal")
 )
 ```
+
+# Summary
+
+Italian has TRA at closure and maximum displacement. Polish does not have TRA. Italian TR at closure is less advanced than at maximum displacement.
+
+Italian vowels are 22 msec longer if followed by voiced stops. Polish vowels are 8 msec longer if followed by voiced stops.
