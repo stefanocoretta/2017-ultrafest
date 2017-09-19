@@ -682,3 +682,144 @@ plot_gamsd(
 )
 ```
 
+# Comparison tongue at closure and maximum displacement in Italian
+
+## IT01
+
+```{r it01-voiced-data}
+it01_voiced <- rbind(it01_max, it01_clos) %>%
+    filter(c2phonation == "voiced") %>%
+    mutate(
+        position = ifelse(label %in% c("max_TT", "max_TD"), "maximum", "closure"),
+        position_ord = ordered(position, levels = c("maximum", "closure"))
+    ) %>%
+    unite(item_no, seconds:rec.date) %>%
+    mutate_if(is.character, as.factor)
+```
+
+```{r it01-voiced}
+it01_voiced_gamm <- bam(
+    Y ~
+        X.re +
+        s(X, bs = "cr") +
+        s(X, by = position_ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, item_no, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_voiced,
+    method = "fREML"
+)
+
+rho <- start_value_rho(it01_voiced_gamm)
+
+it01_voiced_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = position_ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, item_no, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_voiced,
+    method = "ML",
+    rho = rho,
+    AR.start = it01_voiced$start.event
+)
+
+summary(it01_voiced_gamm_ar)
+
+it01_voiced_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+#        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, item_no, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it01_voiced,
+    method = "ML",
+    rho = rho,
+    AR.start = it01_voiced$start.event
+)
+
+compareML(it01_voiced_gamm_ar_null, it01_voiced_gamm_ar)
+```
+
+```{r it01-voiced-plot}
+plot_gamsd(
+    it01_voiced_gamm_ar,
+    view = "X",
+    comparison = list(position_ord = c("maximum", "closure")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
+
+## IT02
+
+```{r it02-voiced-data}
+it02_voiced <- rbind(it02_max, it02_clos) %>%
+    filter(c2phonation == "voiced") %>%
+    mutate(
+        position = ifelse(label %in% c("max_TT", "max_TD"), "maximum", "closure"),
+        position_ord = ordered(position, levels = c("maximum", "closure"))
+    ) %>%
+    unite(item_no, seconds:rec.date) %>%
+    mutate_if(is.character, as.factor)
+```
+
+```{r it02-voiced}
+it02_voiced_gamm <- bam(
+    Y ~
+        X.re +
+        s(X, bs = "cr") +
+        s(X, by = position_ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, item_no, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_voiced,
+    method = "fREML"
+)
+
+rho <- start_value_rho(it02_voiced_gamm)
+
+it02_voiced_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = position_ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, item_no, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_voiced,
+    method = "ML",
+    rho = rho,
+    AR.start = it02_voiced$start.event
+)
+
+summary(it02_voiced_gamm_ar)
+
+it02_voiced_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+#        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, item_no, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_voiced,
+    method = "ML",
+    rho = rho,
+    AR.start = it02_voiced$start.event
+)
+
+compareML(it02_voiced_gamm_ar_null, it02_voiced_gamm_ar)
+```
+
+```{r it02-voiced-plot}
+plot_gamsd(
+    it02_voiced_gamm_ar,
+    view = "X",
+    comparison = list(position_ord = c("maximum", "closure")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
