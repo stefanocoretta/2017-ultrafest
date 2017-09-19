@@ -195,8 +195,8 @@ plot(allEffects(pl_vow_lm))
 
 ### IT01
 
-```{r}
-it01_max <- filter(tongues_max, speaker == "it01")
+```{r it01-tra}
+it01_max <- filter(tongues, speaker == "it01")
 
 it01_gamm <- bam(
     Y ~
@@ -245,9 +245,70 @@ it01_gamm_ar_null <- bam(
 compareML(it01_gamm_ar_null, it01_gamm_ar)
 ```
 
-```{r}
+```{r it01-tra-plot}
 plot_gamsd(
     it01_gamm_ar,
+    view = "X",
+    comparison = list(c2phonation.ord = c("voiceless", "voiced")),
+    conditions = list(c2place.ord = "coronal")
+)
+```
+
+### IT02
+
+```{r it02-tra}
+it02_max <- filter(tongues, speaker == "it02")
+
+it02_gamm <- bam(
+    Y ~
+        X.re +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_max,
+    method = "fREML"
+)
+
+rho <- start_value_rho(it02_gamm)
+
+it02_gamm_ar <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_max,
+    method = "ML",
+    rho = rho,
+    AR.start = it02_max$start.event
+)
+
+summary(it02_gamm_ar)
+
+it02_gamm_ar_null <- bam(
+    Y ~
+        X +
+        s(X, bs = "cr") +
+#        s(X, by = c2phonation.ord, bs = "cr") +
+        s(X, by = c2place.ord, bs = "cr") +
+        s(X, by = vowel.ord, bs = "cr") +
+        s(X, rec.date, bs = "fs", xt = "cr", m = 1, k = 5),
+    data = it02_max,
+    method = "ML",
+    rho = rho,
+    AR.start = it02_max$start.event
+)
+
+compareML(it02_gamm_ar_null, it02_gamm_ar)
+```
+
+```{r it02-tra-plot}
+plot_gamsd(
+    it02_gamm_ar,
     view = "X",
     comparison = list(c2phonation.ord = c("voiceless", "voiced")),
     conditions = list(c2place.ord = "coronal")
