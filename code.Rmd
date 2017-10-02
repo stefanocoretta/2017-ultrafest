@@ -23,7 +23,7 @@ library(tidymv) # https://github.com/stefanocoretta/tidymv
 library(itsadug)
 library(lmerTest)
 library(effects)
-options(contrasts = rep ("contr.treatment", 2))
+options(contrasts = rep("contr.treatment", 2))
 ```
 
 # Import data
@@ -39,18 +39,12 @@ columns <- c(
     "seconds",
     "rec.date",
     "prompt",
-    "label",
-    "TT.displacement.sm",
-    "TT.velocity",
-    "TT.velocity.abs",
-    "TD.displacement.sm",
-    "TD.velocity",
-    "TD.velocity.abs"
+    "label"
 )
 
 aaa_files <- list.files(
     path = "./data/tongue",
-    pattern = "*-tongue-cart.tsv",
+    pattern = "*-tongue-cart.csv",
     full.names = TRUE
 )
 
@@ -80,7 +74,7 @@ tongues <- read_aaa(
 
 aaa_files_clos <- list.files(
     path = "./data/tongue",
-    pattern = "*-tongue-clos-cart.tsv",
+    pattern = "*-tongue-clos-cart.csv",
     full.names = TRUE
 )
 
