@@ -1,5 +1,7 @@
 # Repro of "Vowel duration and tongue root advancement in Italian and Polish" (Ultrafest VIII, 2017)
 
+[![DOI](https://zenodo.org/badge/103954298.svg)](https://zenodo.org/badge/latestdoi/103954298)
+
 This repository contains data and code of the talk **Vowel duration and tongue root advancement in Italian and Polish**, presented at Ultrafest VIII.
 
 ## Licence
